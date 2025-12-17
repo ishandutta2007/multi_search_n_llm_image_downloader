@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "multi-search-n-llm-image-downloader"
+name = "multi_search_n_llm_image_downloader"
 version = "0.1.0"
 authors = [
     { name="Ishan", email="ishandutta2007@gmail.com" },
@@ -37,4 +37,4 @@ dependencies = [
 "Homepage" = "https://github.com/ishandutta2007/multi-search-n-llm-image-downloader"
 
 [project.scripts]
-"multi-search-n-llm-image-downloader" = "multi_downloader.multidownloader:main"
+"multi_search_n_llm_image_downloader" = "multi_downloader.multidownloader:main"
