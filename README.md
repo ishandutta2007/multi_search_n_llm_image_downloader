@@ -188,7 +188,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Contact
 
-If you have any questions or feedback, please contact the developer at [shentharkrishnatejaswi@gmail.com](mailto:shentharkrishnatejaswi@gmail.com).
+If you have any questions or feedback, please contact the developer at [ishandutta2007@gmail.com](mailto:ishandutta2007@gmail.com).
 
 ## Star History
 
