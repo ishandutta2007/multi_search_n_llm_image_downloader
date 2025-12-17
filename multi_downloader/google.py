@@ -197,13 +197,16 @@ class Google:
                     # + '&adlt=' + self.adult
                     # + '&qft=' + ('' if self.filter is None else self.get_filter(self.filter))
                 )
+                logging.debug("Request URL: %s", request_url) # Added debug log
                 request = urllib.request.Request(request_url, None, headers=self.headers)
                 response = urllib.request.urlopen(request)
                 html = response.read().decode('utf8')
+                logging.debug("HTML (first 500 chars): %s", html[:500]) # Added debug log
                 if html == "":
                     logging.info("[%] No more images are available")
                     break
                 links = re.findall(r'"ou":"(.*?)"', html)
+                logging.debug("Found links: %s", links) # Added debug log
                 if self.verbose:
                     logging.info("[%%] Indexed %d Images on Page %d.", len(links), self.page_counter + 1)
                     logging.info("\n===============================================\n")
