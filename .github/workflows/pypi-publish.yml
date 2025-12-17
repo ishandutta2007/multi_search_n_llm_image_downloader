@@ -24,5 +24,12 @@ jobs:
         pip install build
     - name: Build package
       run: python -m build
+    - name: Inspect package
+      run: |
+        echo "--- Contents of dist/ ---"
+        ls -R dist
+        echo "--- METADATA from .whl file ---"
+        WHEEL_FILE=$(ls dist/*.whl)
+        unzip -p $WHEEL_FILE */METADATA
     - name: Publish package
       uses: pypa/gh-action-pypi-publish@release/v1
