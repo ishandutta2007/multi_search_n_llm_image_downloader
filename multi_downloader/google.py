@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse
 
 import urllib.request
 import urllib
@@ -164,30 +165,39 @@ class Google:
             largest_image_url = None
             largest_area = 0
             # Test for a given site
-            # if "instagram" in page_url:
+            # if "cafonline" in page_url:
+            #     parsed_url = urlparse(page_url)
+            #     print(parsed_url)
+            #     print(parsed_url.netloc)
             #     output_filename = "igsoup.html"
             #     try:
             #         with open(output_filename, "w", encoding="utf-8") as file:
             #             file.write(str(soup))
-            #         print(f"Successfully wrote the soup to {output_filename}")
+            #         print(f"Successfully wrote the soup of {page_url} to {output_filename}")
             #     except IOError as e:
             #         print(f"Error writing to file: {e}")
 
             #     # pp.pprint(soup.find_all("img"))
             #     for img_tag in soup.find_all("img"):
             #         img_src = img_tag.get("src")
-            #         print(img_src)
-            #     time.sleep(1000)
+            #         if img_src.startswith("/"):
+            #             img_src = parsed_url.netloc + img_src
+            #             print(img_src)
+            #         time.sleep(1000)
 
             for img_tag in soup.find_all("img"):
                 img_src = img_tag.get("src")
-                if (
-                    not img_src
-                    or not img_src.startswith("http")
-                    or img_src.startswith("data:")
-                ):
+                if not img_src:
                     continue
-
+                # print("img_src(b4)=", img_src)
+                if img_src.startswith("/"):
+                    img_src = urlparse(page_url).netloc + img_src
+                # print("img_src(ar1)=", img_src)
+                if img_src.startswith("data:"):
+                    continue
+                if (not img_src.startswith("http")) and (not img_src.startswith("www")):
+                    continue
+                # print("img_src(ar2)=", img_src)
                 width = img_tag.get("width")
                 height = img_tag.get("height")
 
@@ -221,19 +231,24 @@ class Google:
                     and "full" in img_src.lower()
                 ):
                     largest_image_url = img_src
-
             return largest_image_url
 
         except urllib.error.HTTPError as e:
-            print(f"{Fore.RED} HTTPError while fetching page {page_url} : {e}{Style.RESET_ALL}")
+            print(
+                f"{Fore.RED} HTTPError while fetching page {page_url} : {e}{Style.RESET_ALL}"
+            )
             traceback.print_exc()
             return None
         except urllib.error.URLError as e:
-            print(f"{Fore.RED} URLError while fetching page {page_url} : {e}{Style.RESET_ALL}")
+            print(
+                f"{Fore.RED} URLError while fetching page {page_url} : {e}{Style.RESET_ALL}"
+            )
             traceback.print_exc()
             return None
         except Exception as e:
-            print(f"{Fore.RED} Error finding largest image on page {page_url} : {e}{Style.RESET_ALL}")
+            print(
+                f"{Fore.RED} Error finding largest image on page {page_url} : {e}{Style.RESET_ALL}"
+            )
             traceback.print_exc()
             return None
 
@@ -244,18 +259,24 @@ class Google:
             kind = filetype.guess(image)
             if kind is None or not kind.mime.startswith("image/"):
                 print(f"Invalid image, not saving {link}")
-                raise ValueError(f"{Fore.RED} Invalid image, not saving {link}{Style.RESET_ALL}")
+                raise ValueError(
+                    f"{Fore.RED} Invalid image, not saving {link}{Style.RESET_ALL}"
+                )
             with open(str(file_path), "wb") as f:
                 f.write(image)
 
         except urllib.error.HTTPError as e:
             self.sources -= 1
-            print(f"{Fore.RED} HTTPError while saving image {link}: {e}{Style.RESET_ALL}")
+            print(
+                f"{Fore.RED} HTTPError while saving image {link}: {e}{Style.RESET_ALL}"
+            )
             traceback.print_exc()
 
         except urllib.error.URLError as e:
             self.sources -= 1
-            print(f"{Fore.RED} URLError while saving image {link}: {e}{Style.RESET_ALL}")
+            print(
+                f"{Fore.RED} URLError while saving image {link}: {e}{Style.RESET_ALL}"
+            )
             traceback.print_exc()
 
     def download_image(self, link):
@@ -368,7 +389,9 @@ class Google:
                         print(f"[{self.query}][{aidx + 1}] ===>>> {referrer_url}")
                         referrer_urls.append(referrer_url)
                     except Exception as e:
-                        print(f"{Fore.RED} Error iterating anchors: {e}{Style.RESET_ALL}")
+                        print(
+                            f"{Fore.RED} Error iterating anchors: {e}{Style.RESET_ALL}"
+                        )
                         traceback.print_exc()
                 links = referrer_urls
                 max_image_possible = len(links)
@@ -400,7 +423,9 @@ class Google:
 
                         if self.download_count < self.limit:
                             image_url = self._find_largest_image_on_page(referrer_url)
-                            print(f"{Fore.BLUE} {referrer_url} ----> {image_url} {Style.RESET_ALL}")
+                            print(
+                                f"{Fore.BLUE} {referrer_url} ----> {image_url} {Style.RESET_ALL}"
+                            )
                             if image_url is None:
                                 max_image_possible -= 1
                                 continue
@@ -426,16 +451,22 @@ class Google:
                                     f"\n[{self.query}][{ridx + 1}/{len(referrer_urls)}]Images {self.download_count}(downloaded) of {max_image_possible}(max possible), sent limit={self.limit}"
                                 )
                     except Exception as e:
-                        print(f"{Fore.RED} Error iterating largest image {e} {Style.RESET_ALL}")
+                        print(
+                            f"{Fore.RED} Error iterating largest image {e} {Style.RESET_ALL}"
+                        )
                         traceback.print_exc()
 
                 self.page_counter += 1
             except urllib.error.HTTPError as e:
-                print(f"{Fore.RED} HTTPError while making request to Google: {e}{Style.RESET_ALL}")
+                print(
+                    f"{Fore.RED} HTTPError while making request to Google: {e}{Style.RESET_ALL}"
+                )
                 traceback.print_exc()
                 if "429" in str(e):
                     raise e
             except urllib.error.URLError as e:
-                print(f"{Fore.RED} URLError while making request to Google: {e}{Style.RESET_ALL}")
+                print(
+                    f"{Fore.RED} URLError while making request to Google: {e}{Style.RESET_ALL}"
+                )
 
         logging.info("\n\n[%%] Done. Downloaded %d images.", self.download_count)
