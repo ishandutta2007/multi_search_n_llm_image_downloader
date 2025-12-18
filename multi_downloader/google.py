@@ -278,7 +278,8 @@ class Google:
                     print(f"[{self.query}][{aidx+1}] ===>>> {referrer_url}")
                     referrer_urls.append(referrer_url)
                 links = referrer_urls
-                print(f"[{self.query}]No of Links extracted = {len(links)}")
+                max_image_possible = len(links)
+                print(f"[{self.query}]No of websites to be scraped = {max_image_possible}")
                 if self.verbose:
                     logging.info("[%%] Indexed %d Referrer URLs on Page %d.", len(referrer_urls), self.page_counter + 1)
                     logging.info("\n===============================================\n")
@@ -297,12 +298,14 @@ class Google:
                     if self.download_count < self.limit:
                         image_url = self._find_largest_image_on_page(referrer_url)
                         if image_url and any(image_url.endswith(e) for e in ignore_exts):
+                            max_image_possible-=1
                             continue
                         if image_url and image_url not in self.seen:
                             self.seen.add(image_url)
                             self.download_image(image_url)
                         elif not image_url:
                             logging.info("No suitable image found on page: %s", referrer_url)
+                        print(f"[{self.query}]Downloaded {self.download_count}/{max_image_possible} images, limit={self.limit}")
 
                 self.page_counter += 1
             except urllib.error.HTTPError as e:
