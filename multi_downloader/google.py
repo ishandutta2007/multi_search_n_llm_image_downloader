@@ -263,14 +263,16 @@ class Google:
                     if len(urls) == 0:
                         continue
                     referrer_url = urls[0].split("&")[0] #anc['href']#anc.get('href')
+                    if not referrer_url:
+                        continue
+                    referrer_url = referrer_url.strip()
                     ignore_domains = ("www.google.com", "support.google.com", "www.youtube.com")
                     if any(d in referrer_url for d in ignore_domains):
                         continue
                     if referrer_url in referrer_urls:
                         continue
-                    print(f"[{aidx+1}] ===>>> {referrer_url}")
-                    if referrer_url:
-                        referrer_urls.append(referrer_url)
+                    print(f"[{self.query}][{aidx+1}] ===>>> {referrer_url}")
+                    referrer_urls.append(referrer_url)
                 links = referrer_urls
                 if self.verbose:
                     logging.info("[%%] Indexed %d Referrer URLs on Page %d.", len(referrer_urls), self.page_counter + 1)
