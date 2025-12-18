@@ -266,6 +266,8 @@ class Google:
                     ignore_domains = ("www.google.com", "support.google.com", "www.youtube.com")
                     if any(d in referrer_url for d in ignore_domains):
                         continue
+                    if referrer_url in referrer_urls:
+                        continue
                     print(f"[{aidx+1}] ===>>> {referrer_url}")
                     if referrer_url:
                         referrer_urls.append(referrer_url)
