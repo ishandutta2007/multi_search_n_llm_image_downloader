@@ -1,4 +1,4 @@
-""" Download image according to given urls and automatically rename them in order. """
+"""Download image according to given urls and automatically rename them in order."""
 # author: Krishnatejaswi S
 # Email: shentharkrishnatejaswi@gmail.com
 
@@ -20,12 +20,15 @@ headers = {
     # 'Connection': 'close',
 }
 
-def download_image(image_url, dst_dir, file_name, timeout=20, proxy_type=None, proxy=None):
+
+def download_image(
+    image_url, dst_dir, file_name, timeout=20, proxy_type=None, proxy=None
+):
     proxies = None
     if proxy_type is not None:
         proxies = {
             "http": proxy_type + "://" + proxy,
-            "https": proxy_type + "://" + proxy
+            "https": proxy_type + "://" + proxy,
         }
 
     response = None
@@ -35,8 +38,9 @@ def download_image(image_url, dst_dir, file_name, timeout=20, proxy_type=None, p
         try:
             try_times += 1
             response = requests.get(
-                image_url, headers=headers, timeout=timeout, proxies=proxies)
-            with open(file_path, 'wb') as f:
+                image_url, headers=headers, timeout=timeout, proxies=proxies
+            )
+            with open(file_path, "wb") as f:
                 f.write(response.content)
             response.close()
             kind = filetype.guess(file_path)
@@ -58,7 +62,15 @@ def download_image(image_url, dst_dir, file_name, timeout=20, proxy_type=None, p
             break
 
 
-def download_images(image_urls, dst_dir, file_prefix="img", concurrency=50, timeout=20, proxy_type=None, proxy=None):
+def download_images(
+    image_urls,
+    dst_dir,
+    file_prefix="img",
+    concurrency=50,
+    timeout=20,
+    proxy_type=None,
+    proxy=None,
+):
     """
     Download image according to given urls and automatically rename them in order.
     :param timeout:
@@ -80,7 +92,16 @@ def download_images(image_urls, dst_dir, file_prefix="img", concurrency=50, time
             os.makedirs(dst_dir)
         for image_url in image_urls:
             file_name = file_prefix + "_" + "%04d" % count
-            future_list.append(executor.submit(
-                download_image, image_url, dst_dir, file_name, timeout, proxy_type, proxy))
+            future_list.append(
+                executor.submit(
+                    download_image,
+                    image_url,
+                    dst_dir,
+                    file_name,
+                    timeout,
+                    proxy_type,
+                    proxy,
+                )
+            )
             count += 1
         concurrent.futures.wait(future_list, timeout=180)
