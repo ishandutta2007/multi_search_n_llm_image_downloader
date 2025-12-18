@@ -9,6 +9,11 @@ import logging
 from tqdm import tqdm
 import filetype
 import pprint as pp
+import traceback
+from colorama import Fore
+from colorama import init as colorama_init
+from colorama import Style
+colorama_init()
 
 ignore_domains = ("www.google.com", "support.google.com", "www.youtube.com", "https://en.wikipedia.org/wiki/Special:CentralAutoLogin/setCookies", "https://en.wikipedia.org/wiki/Special:CentralAutoLogin/start")
 ignore_exts = (".cms", ".svg", ".gif")
@@ -166,12 +171,15 @@ class Google:
 
         except urllib.error.HTTPError as e:
             print('HTTPError while fetching page %s: %s', page_url, e)
+            traceback.print_stack()
             return None
         except urllib.error.URLError as e:
             print('URLError while fetching page %s: %s', page_url, e)
+            traceback.print_stack()
             return None
         except Exception as e:
-            print('Error finding largest image on page %s: %s', page_url, e)
+            print(f'{Fore.RED} Error finding largest image on page %s: %s', page_url, e)
+            traceback.print_stack()
             return None
 
     def save_image(self, link, file_path) -> None:
@@ -188,10 +196,12 @@ class Google:
         except urllib.error.HTTPError as e:
             self.sources-=1
             print('HTTPError while saving image %s: %s', link, e)
+            traceback.print_stack()
 
         except urllib.error.URLError as e:
             self.sources-=1
             print('URLError while saving image %s: %s', link, e)
+            traceback.print_stack()
 
     def download_image(self, link):
         self.download_count += 1
@@ -217,7 +227,8 @@ class Google:
 
         except Exception as e:
             self.download_count -= 1
-            print('Issue getting: %s\nError: %s', link, e)
+            print(f'{Fore.RED} Issue getting: %s\nError: %s', link, e)
+            traceback.print_stack()
 
     def run(self):
         while self.download_count < self.limit:
@@ -279,7 +290,8 @@ class Google:
                         print(f"[{self.query}][{aidx+1}] ===>>> {referrer_url}")
                         referrer_urls.append(referrer_url)
                     except Exception as e:
-                        print("Error iterating anchors", e)
+                        print(f"{Fore.RED} Error iterating anchors", e)
+                        traceback.print_stack()
                 links = referrer_urls
                 max_image_possible = len(links)
                 print(f"[{self.query}]No of websites to be scraped = {max_image_possible}")
@@ -314,11 +326,13 @@ class Google:
                                 logging.info("No suitable image found on page: %s", referrer_url)
                                 print(f"\n[{self.query}][{ridx+1}/{len(referrer_urls)}]Images {self.download_count}(downloaded) of {max_image_possible}(max possible), sent limit={self.limit}")
                     except Exception as e:
-                        print("Error iterating largest image", e)
+                        print(f"{Fore.RED} Error iterating largest image", e)
+                        traceback.print_stack()
 
                 self.page_counter += 1
             except urllib.error.HTTPError as e:
                 print(' => HTTPError while making request to Google: %s', e)
+                traceback.print_stack()
                 if "429" in str(e):
                     raise e
             except urllib.error.URLError as e:
