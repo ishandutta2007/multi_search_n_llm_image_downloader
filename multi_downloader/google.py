@@ -283,7 +283,7 @@ class Google:
                 if self.verbose:
                     logging.info("[%%] Indexed %d Referrer URLs on Page %d.", len(referrer_urls), self.page_counter + 1)
                     logging.info("\n===============================================\n")
-                for referrer_url in referrer_urls:
+                for ridx, referrer_url in enumerate(referrer_urls):
 
                     isbadsite = False
                     for badsite in self.badsites:
@@ -305,7 +305,7 @@ class Google:
                             self.download_image(image_url)
                         elif not image_url:
                             logging.info("No suitable image found on page: %s", referrer_url)
-                        print(f"[{self.query}]Downloaded {self.download_count}/{max_image_possible} images, limit={self.limit}")
+                        print(f"[{self.query}][{ridx+1}/{len(referrer_urls)}]Images {self.download_count}(downloaded) of {max_image_possible}(max possible), sent limit={self.limit}")
 
                 self.page_counter += 1
             except urllib.error.HTTPError as e:
