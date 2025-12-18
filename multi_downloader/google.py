@@ -10,6 +10,9 @@ from tqdm import tqdm
 import filetype
 import pprint as pp
 
+ignore_domains = ("www.google.com", "support.google.com", "www.youtube.com")
+ignore_exts = (".cms", ".svg", ".gif")
+
 '''
 
 Python api to download image form Google.
@@ -266,10 +269,8 @@ class Google:
                     if not referrer_url:
                         continue
                     referrer_url = referrer_url.strip()
-                    ignore_domains = ("www.google.com", "support.google.com", "www.youtube.com")
                     if any(d in referrer_url for d in ignore_domains):
                         continue
-                    ignore_exts = (".cms", ".svg", ".gif")
                     if any(referrer_url.endswith(e) for e in ignore_exts):
                         continue
                     if referrer_url in referrer_urls:
@@ -295,6 +296,8 @@ class Google:
 
                     if self.download_count < self.limit:
                         image_url = self._find_largest_image_on_page(referrer_url)
+                        if image_url and any(image_url.endswith(e) for e in ignore_exts):
+                            continue
                         if image_url and image_url not in self.seen:
                             self.seen.add(image_url)
                             self.download_image(image_url)
