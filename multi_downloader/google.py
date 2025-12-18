@@ -257,15 +257,16 @@ class Google:
                 soup = BeautifulSoup(html, 'html.parser')
                 referrer_urls = []
                 anchors = soup.find_all('a')
-                pp.pprint(anchors)
+                # pp.pprint(anchors)
                 for aidx, anc in enumerate(anchors):
                     urls = re.findall(r'(https?://\S+)', anc['href'])
                     if len(urls) == 0:
                         continue
                     referrer_url = urls[0].split("&")[0] #anc['href']#anc.get('href')
-                    if "www.google.com" in referrer_url:
+                    ignore_domains = ("www.google.com", "support.google.com", "www.youtube.com")
+                    if any(d in referrer_url for d in ignore_domains):
                         continue
-                    # print(f"[{aidx+1}] ===>>> {referrer_url}")
+                    print(f"[{aidx+1}] ===>>> {referrer_url}")
                     if referrer_url:
                         referrer_urls.append(referrer_url)
                 links = referrer_urls
