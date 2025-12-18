@@ -209,15 +209,15 @@ class Google:
 
         except urllib.error.HTTPError as e:
             print(f"{Fore.RED} HTTPError while fetching page {page_url} : {e}{Style.RESET_ALL}")
-            traceback.print_stack()
+            traceback.print_exc()
             return None
         except urllib.error.URLError as e:
             print(f"{Fore.RED} URLError while fetching page {page_url} : {e}{Style.RESET_ALL}")
-            traceback.print_stack()
+            traceback.print_exc()
             return None
         except Exception as e:
             print(f"{Fore.RED} Error finding largest image on page {page_url} : {e}{Style.RESET_ALL}")
-            traceback.print_stack()
+            traceback.print_exc()
             return None
 
     def save_image(self, link, file_path) -> None:
@@ -234,12 +234,12 @@ class Google:
         except urllib.error.HTTPError as e:
             self.sources -= 1
             print(f"{Fore.RED} HTTPError while saving image {link}: {e}{Style.RESET_ALL}")
-            traceback.print_stack()
+            traceback.print_exc()
 
         except urllib.error.URLError as e:
             self.sources -= 1
             print(f"{Fore.RED} URLError while saving image {link}: {e}{Style.RESET_ALL}")
-            traceback.print_stack()
+            traceback.print_exc()
 
     def download_image(self, link):
         self.download_count += 1
@@ -285,7 +285,7 @@ class Google:
         except Exception as e:
             self.download_count -= 1
             print(f"{Fore.RED} Issue getting: {link}\nError: {e}{Style.RESET_ALL}")
-            traceback.print_stack()
+            traceback.print_exc()
 
     def run(self):
         while self.download_count < self.limit:
@@ -352,7 +352,7 @@ class Google:
                         referrer_urls.append(referrer_url)
                     except Exception as e:
                         print(f"{Fore.RED} Error iterating anchors: {e}{Style.RESET_ALL}")
-                        traceback.print_stack()
+                        traceback.print_exc()
                 links = referrer_urls
                 max_image_possible = len(links)
                 print(
@@ -383,6 +383,7 @@ class Google:
 
                         if self.download_count < self.limit:
                             image_url = self._find_largest_image_on_page(referrer_url)
+                            print(f"{Fore.BLUE} {referrer_url} ----> {image_url} {Style.RESET_ALL}")
                             if image_url is None:
                                 max_image_possible -= 1
                                 continue
@@ -394,7 +395,6 @@ class Google:
                             ):
                                 max_image_possible -= 1
                                 continue
-                            print(f"{Fore.BLUE} {image_url} {Style.RESET_ALL}")
                             if image_url and image_url not in self.seen:
                                 self.seen.add(image_url)
                                 self.download_image(image_url)
@@ -410,12 +410,12 @@ class Google:
                                 )
                     except Exception as e:
                         print(f"{Fore.RED} Error iterating largest image {e} {Style.RESET_ALL}")
-                        traceback.print_stack()
+                        traceback.print_exc()
 
                 self.page_counter += 1
             except urllib.error.HTTPError as e:
                 print(f"{Fore.RED} HTTPError while making request to Google: {e}{Style.RESET_ALL}")
-                traceback.print_stack()
+                traceback.print_exc()
                 if "429" in str(e):
                     raise e
             except urllib.error.URLError as e:
