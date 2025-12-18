@@ -269,6 +269,9 @@ class Google:
                     ignore_domains = ("www.google.com", "support.google.com", "www.youtube.com")
                     if any(d in referrer_url for d in ignore_domains):
                         continue
+                    ignore_exts = (".cms", ".svg", ".gif")
+                    if any(referrer_url.endswith(e) for e in ignore_exts):
+                        continue
                     if referrer_url in referrer_urls:
                         continue
                     print(f"[{self.query}][{aidx+1}] ===>>> {referrer_url}")
