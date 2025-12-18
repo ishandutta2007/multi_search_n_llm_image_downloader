@@ -277,6 +277,7 @@ class Google:
                     print(f"[{self.query}][{aidx+1}] ===>>> {referrer_url}")
                     referrer_urls.append(referrer_url)
                 links = referrer_urls
+                print(f"[{self.query}]No of Links extracted = {len(links)}")
                 if self.verbose:
                     logging.info("[%%] Indexed %d Referrer URLs on Page %d.", len(referrer_urls), self.page_counter + 1)
                     logging.info("\n===============================================\n")
