@@ -147,11 +147,11 @@ class Bing:
                 f.write(image)
 
         except urllib.error.HTTPError as e:
-            self.sources -= 1
+            # self.sources -= 1
             logging.error("HTTPError while saving image %s: %s", link, e)
 
         except urllib.error.URLError as e:
-            self.sources -= 1
+            # self.sources -= 1
             logging.error("URLError while saving image %s: %s", link, e)
 
     def download_image(self, link):

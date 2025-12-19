@@ -120,6 +120,7 @@ class Google:
         name="Image",
     ):
         self.download_count = 0
+        self.small_downloaded_cnt = 0
         self.query = query
         self.output_dir = output_dir
         self.adult = adult
@@ -299,14 +300,14 @@ class Google:
                 f.write(image)
 
         except urllib.error.HTTPError as e:
-            self.sources -= 1
+            # self.sources -= 1
             print(
                 f"{Fore.RED} HTTPError while saving image {link}: {e}{Style.RESET_ALL}"
             )
             traceback.print_exc()
 
         except urllib.error.URLError as e:
-            self.sources -= 1
+            # self.sources -= 1
             print(
                 f"{Fore.RED} URLError while saving image {link}: {e}{Style.RESET_ALL}"
             )
@@ -348,7 +349,7 @@ class Google:
             traceback.print_exc()
 
     def run(self):
-        while self.download_count < self.limit:
+        while self.download_count - self.small_downloaded_cnt < self.limit:
             if self.verbose:
                 logging.info("\n\n[!]Indexing page: %d\n", self.page_counter + 1)
             # Parse the page source and download pics
@@ -388,6 +389,13 @@ class Google:
                     logging.info("[%] No more images are available")
                     break
                 soup = BeautifulSoup(html, "html.parser")
+                img_tags = soup.findAll("img")
+                small_image_links = list(tag["src"] for tag in img_tags)
+                self.small_downloaded_cnt = 0
+                for small_image_link in small_image_links:
+                    self.download_image(small_image_link, "goog")
+                    self.small_downloaded_cnt += 1
+
                 referrer_urls = []
                 anchors = soup.find_all("a")
                 # pp.pprint(anchors)
@@ -443,7 +451,7 @@ class Google:
                         if isbadsite:
                             continue
 
-                        if self.download_count < self.limit:
+                        if self.download_count - self.small_downloaded_cnt < self.limit:
                             image_urls = self._find_all_images_on_page(referrer_url)
                             # print(
                             #     f"{Fore.BLUE} {referrer_url} ----> {image_url} {Style.RESET_ALL}"
